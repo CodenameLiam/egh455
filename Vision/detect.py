@@ -6,13 +6,12 @@ from absl import app, flags, logging
 from absl.flags import FLAGS
 import core.utils as utils
 from core.yolov4 import filter_boxes
-from tensorflow.python.saved_model import tag_constants
 from PIL import Image
 import cv2
 import numpy as np
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
-import CameraHelper
+from CameraHelper import CameraHelper
 
 flags.DEFINE_string('framework', 'tf', '(tf, tflite, trt')
 flags.DEFINE_string('weights', './checkpoints/yolov4-416',
@@ -29,13 +28,13 @@ def main(_argv):
     session = InteractiveSession(config=config)
     STRIDES, ANCHORS, NUM_CLASS, XYSCALE = utils.load_config(FLAGS)
     input_size = FLAGS.size
-    image_path = FLAGS.image
+    
 
     cameraHelper = CameraHelper()
 
     while True:
-        original_image = CameraHelper.getImage()
-        #original_image = cv2.imread(image_path)
+        original_image = cameraHelper.getImage()
+        #original_image = cv2.imread("./data/kite.jpg")
         #original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 
         # image_data = utils.image_preprocess(np.copy(original_image), [input_size, input_size])
@@ -53,8 +52,7 @@ def main(_argv):
             interpreter.allocate_tensors()
             input_details = interpreter.get_input_details()
             output_details = interpreter.get_output_details()
-            print(input_details)
-            print(output_details)
+           
             interpreter.set_tensor(input_details[0]['index'], images_data)
             interpreter.invoke()
             pred = [interpreter.get_tensor(output_details[i]['index']) for i in range(len(output_details))]
@@ -87,7 +85,7 @@ def main(_argv):
         
         image.show()
         image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
-        cv2.imwrite(FLAGS.output, image)
+        cv2.imwrite("test.jpg", image)
 
 if __name__ == '__main__':
     try:
