@@ -16,7 +16,6 @@ export const ImageContainer = styled.div`
 
 export const Image = styled.img`
 	padding: 0.5rem;
-	height: 100%;
 	width: 100%;
 	object-fit: contain;
 `;

@@ -14,7 +14,6 @@ const App: FC = () => {
 		<StylesProvider injectFirst>
 			<Styles.AppContainer>
 				<Global styles={GlobalStyles} />
-
 				<ImageStream />
 				<Styles.IPContainer>
 					<VideoFeed />

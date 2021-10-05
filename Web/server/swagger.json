@@ -1,0 +1,110 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "EGH455 Assignment",
+		"version": "1.0.0",
+		"description": "Documentation for the EGH455 Web APIs"
+	},
+	"servers": [{ "url": "http://localhost:5000" }],
+
+	"tags": [
+		{
+			"name": "Sensor",
+			"description": "Endpoint for sending sensor data"
+		},
+		{
+			"name": "Image",
+			"description": "Endpoint for sending image data"
+		}
+	],
+	"paths": {
+		"/sensor": {
+			"post": {
+				"summary": "Send sensor data to the web interface",
+				"tags": ["Sensor"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SensorData"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					}
+				}
+			}
+		},
+		"/image": {
+			"post": {
+				"summary": "Send image data to the web interface",
+				"tags": ["Image"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"$ref": "#/components/schemas/ImageData"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"SensorData": {
+				"type": "object",
+				"properties": {
+					"gas": {
+						"type": "number"
+					},
+					"humitidy": {
+						"type": "number"
+					},
+					"pressure": {
+						"type": "number"
+					},
+					"temperature": {
+						"type": "number"
+					},
+					"light": {
+						"type": "number"
+					},
+					"noise": {
+						"type": "number"
+					}
+				}
+			},
+			"ImageData": {
+				"type": "object",
+				"properties": {
+					"file": {
+						"type": "string",
+						"format": "binary"
+					},
+					"personDetected": {
+						"type": "boolean"
+					},
+					"backpackDetected": {
+						"type": "boolean"
+					},
+					"markerDetected": {
+						"type": "boolean"
+					}
+				},
+				"required": ["file"]
+			}
+		}
+	}
+}
