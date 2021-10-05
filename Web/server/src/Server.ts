@@ -6,6 +6,8 @@ import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import Emitter from 'Models/Emitter';
+import {play} from 'sound-play';
+
 
 // ----------------------------------------------------------------------------------------
 // Initialisation
@@ -13,7 +15,6 @@ import Emitter from 'Models/Emitter';
 const app = express(); // Init app
 const server = createServer(app); // Create http server
 const io = new Server(server, { cors: { origin: 'http://localhost:3000' } }); // Init sockets
-
 // ----------------------------------------------------------------------------------------
 // Setup middleware
 // ----------------------------------------------------------------------------------------
@@ -29,6 +30,7 @@ io.on('connection', (socket: Socket) => {
 
 	socket.on('pause', () => {
 		emitter.pause();
+
 	});
 
 	socket.on('play', () => {
@@ -39,6 +41,20 @@ io.on('connection', (socket: Socket) => {
 		console.log(`User from ${socket.handshake.address} has disconnected`);
 		emitter.pause();
 	});
+
+	socket.on('marker_detected', function(data){
+		console.log(`Marker type detected: ${data.Type} ` + `File: ${data.File}`);
+		const sound = require("sound-play");
+		sound.play('Web/server/src/Assets/Marker_Alerts/trump_backpack_china.wav')
+		io.sockets.emit('marker_detected', data);
+	});
+
+	socket.on('sensor_data', function(data){
+		console.log(`New Data: Gas: ${data.Gas}` + `, Humidity: ${data.Humidity} `+ `, Pressure: ${data.Pressure} `+ `, Temperature: ${data.Temperature}` + 
+			`, Light ${data.Lux}` + `, Noise: ${data.Noise}`);
+		io.sockets.emit('sensor_data', data);
+	});
+
 });
 
 // ----------------------------------------------------------------------------------------
