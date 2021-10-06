@@ -41,15 +41,18 @@ const SensorPlot: FC = () => {
 
 	// Subscribe to socket
 	useEffect(() => {
-		socket.on('message', message => {
-			// Update data
-			const data = ref.current?.data.datasets[0].data;
-			data?.shift();
-			data?.push(message);
-
-			// Update chart
-			ref.current.update();
+		socket.on('sensor', data => {
+			console.log(data);
 		});
+		// socket.on('message', message => {
+		// 	// Update data
+		// 	const data = ref.current?.data.datasets[0].data;
+		// 	data?.shift();
+		// 	data?.push(message);
+
+		// 	// Update chart
+		// 	ref.current.update();
+		// });
 	}, []);
 
 	return (
