@@ -20,6 +20,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from fonts.ttf import RobotoMedium as UserFont
 import logging
+import socketio
 
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
@@ -31,6 +32,27 @@ logging.info("""combined.py - Displays readings from all of Enviro plus' sensors
 Press Ctrl+C to exit!
 
 """)
+
+# Establish socket connection
+sio = socketio.Client()
+
+@sio.event
+def connect():
+    print('connection established')
+
+@sio.event
+def my_message(data):
+    print('sending message of sensor data')
+    sio.emit('sensor_data', {'Temperature': data[0], 'Pressure': data[1], 'Humidity': data[2], 'Light': data[3], 'Oxidised': data[4], 'Reduced': data[5], 'NH3': data[6]})
+
+@sio.event
+def disconnect():
+    print('disconnected from server')
+
+sio.connect('http://172.19.28.216:5000')
+
+# Global array for sensor data
+sensor_data = [0, 0, 0, 0, 0, 0, 0]
 
 # BME280 temperature/pressure/humidity sensor
 bme280 = BME280()
@@ -161,6 +183,7 @@ def display_everything():
     for i in range(len(variables)):
         variable = variables[i]
         data_value = values[variable][-1]
+        sensor_data[i] = data_value
         unit = units[i]
         x = x_offset + ((WIDTH // column_count) * (i // row_count))
         y = y_offset + ((HEIGHT / row_count) * (i % row_count))
@@ -172,6 +195,7 @@ def display_everything():
                 rgb = palette[j + 1]
         draw.text((x, y), message, font=smallfont, fill=rgb)
     st7735.display(img)
+    my_message(sensor_data)
 
 
 # Get the temperature of the CPU for compensation
@@ -189,7 +213,7 @@ def main():
     cpu_temps = [get_cpu_temperature()] * 5
 
     delay = 0.5  # Debounce the proximity tap
-    mode = 10    # The starting mode
+    mode = 0    # The starting mode
     last_page = 0
 
     for v in variables:
@@ -206,62 +230,9 @@ def main():
                 mode %= (len(variables) + 1)
                 last_page = time.time()
 
-            # One mode for each variable
+            # Display everything on the LCD screen
             if mode == 0:
-                # variable = "temperature"
-                unit = "C"
-                cpu_temp = get_cpu_temperature()
-                # Smooth out with some averaging to decrease jitter
-                cpu_temps = cpu_temps[1:] + [cpu_temp]
-                avg_cpu_temp = sum(cpu_temps) / float(len(cpu_temps))
-                raw_temp = bme280.get_temperature()
-                data = raw_temp - ((avg_cpu_temp - raw_temp) / factor)
-                display_text(variables[mode], data, unit)
-
-            if mode == 1:
-                # variable = "pressure"
-                unit = "hPa"
-                data = bme280.get_pressure()
-                display_text(variables[mode], data, unit)
-
-            if mode == 2:
-                # variable = "humidity"
-                unit = "%"
-                data = bme280.get_humidity()
-                display_text(variables[mode], data, unit)
-
-            if mode == 3:
-                # variable = "light"
-                unit = "Lux"
-                if proximity < 10:
-                    data = ltr559.get_lux()
-                else:
-                    data = 1
-                display_text(variables[mode], data, unit)
-
-            if mode == 4:
-                # variable = "oxidised"
-                unit = "kO"
-                data = gas.read_all()
-                data = data.oxidising / 1000
-                display_text(variables[mode], data, unit)
-
-            if mode == 5:
-                # variable = "reduced"
-                unit = "kO"
-                data = gas.read_all()
-                data = data.reducing / 1000
-                display_text(variables[mode], data, unit)
-
-            if mode == 6:
-                # variable = "nh3"
-                unit = "kO"
-                data = gas.read_all()
-                data = data.nh3 / 1000
-                display_text(variables[mode], data, unit)
-
-            if mode == 7:
-                # Everything on one screen
+		# Temperature
                 cpu_temp = get_cpu_temperature()
                 # Smooth out with some averaging to decrease jitter
                 cpu_temps = cpu_temps[1:] + [cpu_temp]
@@ -270,17 +241,21 @@ def main():
                 raw_data = raw_temp - ((avg_cpu_temp - raw_temp) / factor)
                 save_data(0, raw_data)
                 display_everything()
+		# Pressure
                 raw_data = bme280.get_pressure()
                 save_data(1, raw_data)
                 display_everything()
+		# Humidity
                 raw_data = bme280.get_humidity()
                 save_data(2, raw_data)
+		# Light
                 if proximity < 10:
                     raw_data = ltr559.get_lux()
                 else:
                     raw_data = 1
                 save_data(3, raw_data)
                 display_everything()
+		# Gas
                 gas_data = gas.read_all()
                 save_data(4, gas_data.oxidising / 1000)
                 save_data(5, gas_data.reducing / 1000)

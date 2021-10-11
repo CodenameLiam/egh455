@@ -5,6 +5,7 @@ from fonts.ttf import RobotoMedium as UserFont
 import logging
 import time
 
+# Add delay to ensure that Wi-Fi is connected before displaying IP
 time.sleep(10)
 
 logging.basicConfig(
