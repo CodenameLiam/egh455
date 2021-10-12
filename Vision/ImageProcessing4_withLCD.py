@@ -7,7 +7,7 @@ from cv2 import aruco
 #from PIL import Image
 import numpy as np
 
-from CameraHelper2 import CameraHelper
+from CameraHelper import CameraHelper
 from time import time, sleep
 #import imutils
 #from imutils.video import FPS
