@@ -2,12 +2,10 @@ import socketio
 
 
 class webServerConnection:
+    # Establish socket connection
+    sio = socketio.Client()
     def __init__(self):
-        # Establish socket connection
-        self.sio = socketio.Client()
-
-        self.sio.connect('http://172.19.28.216:5000')
-        print('connection established')
+        self.connect()
 
     @sio.event
     def connect():
