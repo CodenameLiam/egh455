@@ -105,7 +105,7 @@ class airQuality():
 
         # Set up canvas and font
         self.img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
-        self.draw = ImageDraw.Draw(img)
+        self.draw = ImageDraw.Draw(self.img)
         self.font_size_small = 10
         self.font_size_large = 20
         self.font = ImageFont.truetype(UserFont, font_size_large)
@@ -177,7 +177,7 @@ class airQuality():
     def getImage(self):
         return self.img
 
-    def update(self):
+    def run(self):
         # The main loop
         try:
             while True:
@@ -209,9 +209,9 @@ class airQuality():
                     self.__save_data(2, raw_data)
                     # Light
                     if proximity < 10:
-                        raw_data = ltr559.get_lux()
+                        self.raw_data = ltr559.get_lux()
                     else:
-                        raw_data = 1
+                        self.raw_data = 1
                     self.__save_data(3, raw_data)
                     self.display_everything()
                     # Gas
@@ -230,14 +230,14 @@ def main():
     import lcdHelper
     from webServerConnection import webServerConnection
 
-    #lcdhelper = lcdHelper()
+    lcd = lcdHelper()
     conn = webServerConnection()
     aQ = airQuality(conn, lcdhelper.WIDTH, lcdhelper.HEIGHT)
     aQ.start()
 
     while True:
         sensor_img = aQ.getImage()
-        lcdHelper.display(sensor_img)
+        lcd.display(sensor_img)
 
 
 if __name__ == "__main__":
