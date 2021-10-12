@@ -228,7 +228,7 @@ class airQuality():
     
 def main():
     import lcdHelper
-    import webServerConnection
+    from webServerConnection import webServerConnection
 
     #lcdhelper = lcdHelper()
     conn = webServerConnection()
