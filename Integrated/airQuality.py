@@ -225,16 +225,16 @@ class airQuality():
         except KeyboardInterrupt:
             sys.exit(0)
 
-    
+
 def main():
     import lcdHelper
-    import webServerConnection
+    from webServerConnection import webServerConnection
 
     #lcdhelper = lcdHelper()
     conn = webServerConnection()
     aQ = airQuality(conn, lcdhelper.WIDTH, lcdhelper.HEIGHT)
     aQ.start()
-    
+
     while True:
         sensor_img = aQ.getImage()
         lcdHelper.display(sensor_img)
