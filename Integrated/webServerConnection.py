@@ -9,7 +9,7 @@ class webServerConnection:
 
     @sio.event
     def connect(self):
-        self.sio.connect('http://172.19.28.216:5000')
+        self.sio.connect('http://192.168.1.106:5000')
         print('connection established')
     @sio.event
     def sensor_message(self, data):
