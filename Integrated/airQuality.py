@@ -108,8 +108,8 @@ class airQuality():
         self.draw = ImageDraw.Draw(self.img)
         self.font_size_small = 10
         self.font_size_large = 20
-        self.font = ImageFont.truetype(UserFont, font_size_large)
-        self.smallfont = ImageFont.truetype(UserFont, font_size_small)
+        self.font = ImageFont.truetype(UserFont, self.font_size_large)
+        self.smallfont = ImageFont.truetype(UserFont, self.font_size_small)
         self.x_offset = 2
         self.y_offset = 2
 
@@ -119,7 +119,7 @@ class airQuality():
         # temperature down, and increase to adjust up
         self.factor = 2.25
 
-        self.cpu_temps = [get_cpu_temperature()] * 5
+        self.cpu_temps = [self.get_cpu_temperature()] * 5
 
         self.delay = 0.5  # Debounce the proximity tap
         self.mode = 0    # The starting mode
@@ -131,7 +131,7 @@ class airQuality():
 
     def start(self):
         # start the thread to read frames from the video stream
-        Thread(target=self.run, args=()).start()
+        Thread(target=self.update, args=()).start()
         return self
 
 
@@ -139,7 +139,7 @@ class airQuality():
     def __save_data(self, idx, data):
         variable = variables[idx]
         # Maintain length of list
-        values[self.variable] = values[variable][1:] + [data]
+        self.values[variable] = self.values[variable][1:] + [data]
         unit = units[idx]
         message = "{}: {:.1f} {}".format(variable[:4], data, unit)
         logging.info(message)
@@ -151,27 +151,27 @@ class airQuality():
         column_count = 2
         row_count = (len(variables) / column_count)
         for i in range(len(variables)):
-            self.variable = self.variables[i]
+            self.variable = variables[i]
             self.data_value = self.values[self.variable][-1]
-            self.sensor_data[i] = self.data_value
+            sensor_data[i] = self.data_value
             self.unit = units[i]
-            self.x = x_offset + ((self.WIDTH // column_count) * (i // row_count))
-            self.y = y_offset + ((self.HEIGHT / row_count) * (i % row_count))
-            self.message = "{}: {:.1f} {}".format(variable[:4], data_value, unit)
+            self.x = self.x_offset + ((self.WIDTH // column_count) * (i // row_count))
+            self.y = self.y_offset + ((self.HEIGHT / row_count) * (i % row_count))
+            self.message = "{}: {:.1f} {}".format(self.variable[:4], self.data_value, self.unit)
             self.lim = limits[i]
             self.rgb = palette[0]
-            for j in range(len(lim)):
-                if data_value > lim[j]:
+            for j in range(len(self.lim)):
+                if self.data_value > self.lim[j]:
                     self.rgb = palette[j + 1]
-            self.draw.text((x, y), self.message, font=smallfont, fill=rgb)
+            self.draw.text((self.x, self.y), self.message, font=self.smallfont, fill=self.rgb)
         #st7735.display(img)
-        conn.sensor_message(sensor_data)
+        #conn.sensor_message(sensor_data)
 
 
     # Get the temperature of the CPU for compensation
     def get_cpu_temperature(self):
         self.process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE, universal_newlines=True)
-        self.output, self._error = process.communicate()
+        self.output, self._error = self.process.communicate()
         return float(self.output[self.output.index('=') + 1:self.output.rindex("'")])
 
     def getImage(self):
@@ -184,35 +184,35 @@ class airQuality():
                 self.proximity = ltr559.get_proximity()
 
                 # If the proximity crosses the threshold, toggle the mode
-                if self.proximity > 1500 and time.time() - self.last_page > self.delay:
-                    self.mode += 1
-                    self.mode %= (len(variables) + 1)
-                    self.last_page = time.time()
+                # if self.proximity > 1500 and time.time() - self.last_page > self.delay:
+                #     self.mode += 1
+                #     self.mode %= (len(variables) + 1)
+                #     self.last_page = time.time()
 
                 # Display everything on the LCD screen
-                if mode == 0:
+                if self.mode == 0:
                     # Temperature
-                    self.cpu_temp = get_cpu_temperature()
+                    self.cpu_temp = self.get_cpu_temperature()
                     # Smooth out with some averaging to decrease jitter
-                    self.cpu_temps = cpu_temps[1:] + [cpu_temp]
-                    self.avg_cpu_temp = sum(cpu_temps) / float(len(cpu_temps))
+                    self.cpu_temps = self.cpu_temps[1:] + [self.cpu_temp]
+                    self.avg_cpu_temp = sum(self.cpu_temps) / float(len(self.cpu_temps))
                     self.raw_temp = bme280.get_temperature()
-                    self.raw_data = raw_temp - ((avg_cpu_temp - raw_temp) / factor)
-                    self.__save_data(0, raw_data)
+                    self.raw_data = self.raw_temp - ((self.avg_cpu_temp - self.raw_temp) / self.factor)
+                    self.__save_data(0, self.raw_data)
                     self.display_everything()
                     # Pressure
                     self.raw_data = bme280.get_pressure()
-                    self.__save_data(1, raw_data)
-                    display_everything()
+                    self.__save_data(1, self.raw_data)
+                    self.display_everything()
                     # Humidity
                     self.raw_data = bme280.get_humidity()
-                    self.__save_data(2, raw_data)
+                    self.__save_data(2, self.raw_data)
                     # Light
-                    if proximity < 10:
+                    if self.proximity < 10:
                         self.raw_data = ltr559.get_lux()
                     else:
                         self.raw_data = 1
-                    self.__save_data(3, raw_data)
+                    self.__save_data(3, self.raw_data)
                     self.display_everything()
                     # Gas
                     gas_data = gas.read_all()
@@ -227,7 +227,7 @@ class airQuality():
 
 
 def main():
-    import lcdHelper
+    from lcdHelper import lcdHelper
     from webServerConnection import webServerConnection
 
     lcd = lcdHelper()

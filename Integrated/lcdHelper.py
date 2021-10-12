@@ -26,4 +26,3 @@ class lcdHelper:
     def display(self, img):
         self.st7735.display(img)
 
-        
