@@ -83,7 +83,9 @@ def main(_argv):
         #print("Image Preprocessing: " + str(time()-start_cycle))
         
         objects = net(image_data)
-        
+        for obj in objects:
+            print(net.class_names[int(obj.label)])
+        print(ids)
         #print("Tensor Processing1: " + str(time()-start_cycle))
         draw_detection_objects(image_data, net.class_names, objects)
         #sleep(0.05)

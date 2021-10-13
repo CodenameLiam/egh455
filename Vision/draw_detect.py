@@ -46,6 +46,6 @@ def draw_detection_objects(image, class_names, objects, min_prob=0.0):
             (0, 0, 0),
         )
 
-    cv2.imshow("image", image)
+    #cv2.imshow("image", image)
     
 

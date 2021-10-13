@@ -22,6 +22,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import ST7735 as ST7735
 
+from fonts.ttf import RobotoMedium as UserFont
+
 score = 0.3
 iou = 0.5
 input_size = 416
@@ -29,11 +31,11 @@ input_size = 416
 # Create ST7735 LCD display class.
 disp = ST7735.ST7735(
     port=0,
-    cs=ST7735.BG_SPI_CS_FRONT,  # BG_SPI_CSB_BACK or BG_SPI_CS_FRONT
+    cs=1,  # BG_SPI_CSB_BACK or BG_SPI_CS_FRONT
     dc=9,
-    backlight=19,               # 18 for back BG slot, 19 for front BG slot.
-    rotation=90,
-    spi_speed_hz=4000000
+    backlight=12,           # 18 for back BG slot, 19 for front BG slot.
+    rotation=270,
+    spi_speed_hz=10000000
 )
 
 WIDTH = disp.width
@@ -71,85 +73,83 @@ def main(_argv):
 
     arucoDict = aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
     arucoParams = aruco.DetectorParameters_create()
-    try:
-        while True:
+    
+    while True:
 
-            start_cycle = time()
-            #original_image = cameraHelper.getImage()
-            
-            #print("Image Collection: " + str(time()-start_cycle))
-            
-            #image_data = cv2.resize(original_image, (input_size, input_size))
-            #image_data = image_data / 255.        
-            image_data = cameraHelper.getImage()
-            #images_data = []
-            
-            
-            (corners, ids, rejected) = aruco.detectMarkers(image_data, arucoDict,
-            parameters=arucoParams)
-
-            # verify *at least* one ArUco marker was detected
-            if len(corners) > 0:
-            # flatten the ArUco IDs list
-                ids = ids.flatten()
-                # loop over the detected ArUCo corners
-                print(ids)
-                for (markerCorner, markerID) in zip(corners, ids):
-                    # extract the marker corners (which are always returned in
-                    # top-left, top-right, bottom-right, and bottom-left order)
-                    corners = markerCorner.reshape((4, 2))
-                    (topLeft, topRight, bottomRight, bottomLeft) = corners
-                    # convert each of the (x, y)-coordinate pairs to integers
-                    topRight = (int(topRight[0]), int(topRight[1]))
-                    bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
-                    bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
-                    topLeft = (int(topLeft[0]), int(topLeft[1]))
-
-                # draw the bounding box of the ArUCo detection
-                    cv2.line(image_data, topLeft, topRight, (0, 255, 0), 2)
-                    cv2.line(image_data, topRight, bottomRight, (0, 255, 0), 2)
-                    cv2.line(image_data, bottomRight, bottomLeft, (0, 255, 0), 2)
-                    cv2.line(image_data, bottomLeft, topLeft, (0, 255, 0), 2)
-            #for i in range(1):
-            #    images_data.append(image_data)
-            #images_data = np.asarray(images_data).astype(np.float32)
-
-            #print("Image Preprocessing: " + str(time()-start_cycle))
-            
-            objects = net(image_data)
-            
-            #print("Tensor Processing1: " + str(time()-start_cycle))
-            draw_detection_objects(image_data, net.class_names, objects)
-            #sleep(0.05)
-            #image.show()
-            # update the FPS counter
-            #fps.update()
-            FPS = 1 / ( time() - start_cycle)
-            #print("FPS: " + str(FPS))
-            FPS_message = "FPS: " + str(FPS)
-
-            #convert to PIL
-            im_pil = Image.fromarray(image_data)
-            
-            # Display the resulting frame
-            # Resize the image
-            im_pil = im_pil.resize((WIDTH, HEIGHT))
-            
-            draw = ImageDraw.Draw(im_pil)
-            x = x_offset;
-            y = y_offset;
-            draw.text((x, y), FPS_message, font=smallfont, fill=rgb)
-            
-            #display image on lcd
-            disp.display(im_pil)
-            
-            if cv2.waitKey(1)==ord('q'):
-                break
-           
+        start_cycle = time()
+        #original_image = cameraHelper.getImage()
         
-        except KeyboardInterrupt:
-             # Exit cleanly
-            sys.exit(0)
+        #print("Image Collection: " + str(time()-start_cycle))
+        
+        #image_data = cv2.resize(original_image, (input_size, input_size))
+        #image_data = image_data / 255.        
+        image_data = cameraHelper.getImage()
+        #images_data = []
+        
+        
+        (corners, ids, rejected) = aruco.detectMarkers(image_data, arucoDict,
+        parameters=arucoParams)
+
+        # verify *at least* one ArUco marker was detected
+        if len(corners) > 0:
+        # flatten the ArUco IDs list
+            ids = ids.flatten()
+            # loop over the detected ArUCo corners
+            print(ids)
+            for (markerCorner, markerID) in zip(corners, ids):
+                # extract the marker corners (which are always returned in
+                # top-left, top-right, bottom-right, and bottom-left order)
+                corners = markerCorner.reshape((4, 2))
+                (topLeft, topRight, bottomRight, bottomLeft) = corners
+                # convert each of the (x, y)-coordinate pairs to integers
+                topRight = (int(topRight[0]), int(topRight[1]))
+                bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+                bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
+                topLeft = (int(topLeft[0]), int(topLeft[1]))
+
+            # draw the bounding box of the ArUCo detection
+                cv2.line(image_data, topLeft, topRight, (0, 255, 0), 2)
+                cv2.line(image_data, topRight, bottomRight, (0, 255, 0), 2)
+                cv2.line(image_data, bottomRight, bottomLeft, (0, 255, 0), 2)
+                cv2.line(image_data, bottomLeft, topLeft, (0, 255, 0), 2)
+        #for i in range(1):
+        #    images_data.append(image_data)
+        #images_data = np.asarray(images_data).astype(np.float32)
+
+        #print("Image Preprocessing: " + str(time()-start_cycle))
+        
+        objects = net(image_data)
+        
+        #print("Tensor Processing1: " + str(time()-start_cycle))
+        draw_detection_objects(image_data, net.class_names, objects)
+        #sleep(0.05)
+        #image.show()
+        # update the FPS counter
+        #fps.update()
+        FPS = 1 / ( time() - start_cycle)
+        #print("FPS: " + str(FPS))
+        FPS_message = "FPS: " + str(FPS)
+
+        #convert to PIL
+        im_pil = Image.fromarray(np.asarray(image_data))
+        
+        # Display the resulting frame
+        # Resize the image
+        im_pil = im_pil.resize((WIDTH, HEIGHT))
+        
+        draw = ImageDraw.Draw(im_pil)
+        x = x_offset
+        y = y_offset
+        draw.text((x, y), FPS_message, font=smallfont, fill=(0,0,255))
+        
+        #display image on lcd
+        disp.display(im_pil)
+        
+        if cv2.waitKey(1)==ord('q'):
+            break
+
+
+
 
 if __name__ == '__main__':
     try:

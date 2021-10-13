@@ -17,7 +17,7 @@ def draw_detection_objects(image, class_names, objects, min_prob=0.0):
             (int(obj.rect.x + obj.rect.w), int(obj.rect.y + obj.rect.h)),
             (255, 0, 0),
         )
-        print(obj.label)
+
         text = "%s %.1f%%" % (class_names[int(obj.label)], obj.prob * 100)
 
         label_size, baseLine = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
@@ -46,6 +46,6 @@ def draw_detection_objects(image, class_names, objects, min_prob=0.0):
             (0, 0, 0),
         )
 
-    cv2.imshow("image", image)
+    #cv2.imshow("image", image)
     
 
