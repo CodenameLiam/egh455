@@ -8,6 +8,6 @@ export const Container = styled(Card)`
 `;
 
 export const ChartContainer = styled.div`
-	height: 100%;
+	height: 80%;
 	padding: 1rem;
 `;

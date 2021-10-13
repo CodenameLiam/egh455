@@ -1,8 +1,10 @@
-import { ChartData, ChartOptions } from 'chart.js';
-import React, { FC } from 'react';
+import { ChartConfiguration, ChartData, ChartOptions } from 'chart.js';
+import React, { FC, useEffect, useRef } from 'react';
+import socket from '../../Services/SocketService';
 import { Bar } from 'react-chartjs-2';
 import { CardTitle } from '../../Styles/Containers';
 import * as Styles from './SensorFeed.styles';
+
 
 const chartData: ChartData = {
 	labels: ['Temp', 'Hum', 'CO2', 'Pressure', 'Light', 'Noise'],
@@ -11,7 +13,7 @@ const chartData: ChartData = {
 			label: 'Sensor value',
 			borderWidth: 2,
 			fill: true,
-			data: [65, 59, 80, 81, 56, 55],
+			data: [],
 			backgroundColor: [
 				'rgba(255, 99, 132, 0.2)',
 				'rgba(255, 159, 64, 0.2)',
@@ -38,11 +40,29 @@ const chartOptions: ChartOptions = {
 };
 
 const SensorFeed: FC = () => {
+	const ref = useRef<ChartConfiguration | any>(null);
+	// Subscribe to socket
+	useEffect(() => {
+		socket.on('sensor', data => {
+			console.log(data);
+		});
+		socket.on('message', message => {
+		// Update data
+		const data = ref.current?.data.datasets;
+		console.log(message)
+		data?.shift();
+		data?.push(message);
+
+		// Update chart
+		ref.current.update();
+	 });
+	}, []);
+
 	return (
 		<Styles.Container>
 			<CardTitle>Sensor Feed</CardTitle>
 			<Styles.ChartContainer>
-				<Bar data={chartData} options={chartOptions} />
+				<Bar ref = {ref} data={chartData} options={chartOptions} />
 			</Styles.ChartContainer>
 		</Styles.Container>
 	);
