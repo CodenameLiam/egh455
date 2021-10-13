@@ -15,8 +15,8 @@ import docs from './../swagger.json';
 import Emitter from 'Models/Emitter';
 import { play } from 'sound-play';
 
-import SensorData from 'Models/Sensor';
-import ImageData from 'Models/Image';
+import { SensorData } from 'Models';
+import { ImageData } from 'Models';
 
 // ----------------------------------------------------------------------------------------
 // Initialisation
@@ -83,6 +83,12 @@ io.on('connection', (socket: Socket) => {
  */
 app.post('/image', upload.single('file'), async (req: Request<{}, {}, ImageData>, res: Response) => {
 	io.emit('image', req.file.buffer);
+
+	io.emit('detection', {
+		personDetected: req.body.personDetected == 'True',
+		markerDetected: req.body.markerDetected == 'True',
+		backpackDetected: req.body.backpackDetected == 'True',
+	});
 	res.sendStatus(200);
 });
 
