@@ -25,7 +25,7 @@ WEB_ON = False    #try to communicate with webserver
 LCD_ON = True    #try to write to lcd screen
 USE_LIVE_IMAGE = False  #draw detections over a live capture instead of the image they were inferenced on.
 CV2_IMSHOW = False   #draw the image on the screen of the pi (if connected to hdmi)
-PRINT_FPS_TO_CONSOLE = True
+PRINT_FPS_TO_CONSOLE = False
 
 # Gets a file buffer from a PIL image
 def pil_to_buf(pil_image):
@@ -141,6 +141,16 @@ class ImageProcessing:
             self.FPS_message = "Detect FPS: " + str(FPS)
             if(PRINT_FPS_TO_CONSOLE):
                 print(self.FPS_message)
+                
+            im_pil = Image.fromarray(np.asarray(image_data))
+            im_pil = im_pil.resize((480, 360))
+                
+            requests.post('http://localhost:5000/image', 
+                files=dict(file=pil_to_buf(im_pil)), 
+                data=self.detect_labels)
+                
+            
+
             
             
          
@@ -240,12 +250,12 @@ def main():
             image = IP.getCurImg()   
                
             if(WEB_ON):
-
-                markers = IP.getDetections()
+                pass
+               
                 # Post the image to the server
-                requests.post('http://localhost:5000/image', 
-                    files=dict(file=pil_to_buf(image)), 
-                    data=markers)
+                #requests.post('http://localhost:5000/image', 
+                 #   files=dict(file=pil_to_buf(image)), 
+                  #  data=markers)
                 # conn.image_message(image, markers)
             if(LCD_ON):
                 im_pil = IP.convert2LCD(image)

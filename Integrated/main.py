@@ -42,6 +42,7 @@ def main():
 
             sensor_img = aQ.getImage()
             lcd.display(sensor_img)
+            
  
     
 
