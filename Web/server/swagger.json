@@ -5,7 +5,7 @@
 		"version": "1.0.0",
 		"description": "Documentation for the EGH455 Web APIs"
 	},
-	"servers": [{ "url": "http://localhost:5000" }],
+	"servers": [{ "url": "http://192.168.1.13:5000" }],
 
 	"tags": [
 		{
@@ -66,22 +66,25 @@
 			"SensorData": {
 				"type": "object",
 				"properties": {
-					"gas": {
-						"type": "number"
-					},
-					"humitidy": {
+					"temperature": {
 						"type": "number"
 					},
 					"pressure": {
 						"type": "number"
 					},
-					"temperature": {
+					"humidity": {
 						"type": "number"
 					},
 					"light": {
 						"type": "number"
 					},
-					"noise": {
+					"oxidised": {
+						"type": "number"
+					},
+					"reduced": {
+						"type": "number"
+					},
+					"nh3": {
 						"type": "number"
 					}
 				}
@@ -94,13 +97,16 @@
 						"format": "binary"
 					},
 					"personDetected": {
-						"type": "boolean"
+						"type": "string",
+						"enum": ["True", "False"]
 					},
 					"backpackDetected": {
-						"type": "boolean"
+						"type": "string",
+						"enum": ["True", "False"]
 					},
 					"markerDetected": {
-						"type": "boolean"
+						"type": "string",
+						"enum": ["True", "False"]
 					}
 				},
 				"required": ["file"]
