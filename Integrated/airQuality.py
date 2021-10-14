@@ -98,10 +98,11 @@ palette = [(0, 0, 255),           # Dangerously Low
 
 class airQuality():
     values = {}
-    def __init__(self, connection, WIDTH, HEIGHT):
+    def __init__(self, connection, IP, WIDTH, HEIGHT):
         self.conn = connection
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
+        self.IP = IP
 
         # Set up canvas and font
         self.img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -131,7 +132,7 @@ class airQuality():
 
     def start(self):
         # start the thread to read frames from the video stream
-        Thread(target=self.update, args=()).start()
+        Thread(target=self.run, args=()).start()
         return self
 
 
@@ -147,7 +148,9 @@ class airQuality():
 
     # Displays all the text on the 0.96" LCD
     def display_everything(self):
-        self.draw.rectangle((0, 0, self.WIDTH, self.HEIGHT), (0, 0, 0))
+        self.img = self.IP.convert2LCD(self.IP.getCurImg() )
+        self.draw = ImageDraw.Draw(self.img)
+        #self.draw.rectangle((0, 0, self.WIDTH, self.HEIGHT), (0, 0, 0))
         column_count = 2
         row_count = (len(variables) / column_count)
         for i in range(len(variables)):
@@ -191,6 +194,8 @@ class airQuality():
 
                 # Display everything on the LCD screen
                 if self.mode == 0:
+                    
+              #im_pil = IP.
                     # Temperature
                     self.cpu_temp = self.get_cpu_temperature()
                     # Smooth out with some averaging to decrease jitter
@@ -199,11 +204,11 @@ class airQuality():
                     self.raw_temp = bme280.get_temperature()
                     self.raw_data = self.raw_temp - ((self.avg_cpu_temp - self.raw_temp) / self.factor)
                     self.__save_data(0, self.raw_data)
-                    self.display_everything()
+                    #self.display_everything()
                     # Pressure
                     self.raw_data = bme280.get_pressure()
                     self.__save_data(1, self.raw_data)
-                    self.display_everything()
+                    #self.display_everything()
                     # Humidity
                     self.raw_data = bme280.get_humidity()
                     self.__save_data(2, self.raw_data)
@@ -213,7 +218,7 @@ class airQuality():
                     else:
                         self.raw_data = 1
                     self.__save_data(3, self.raw_data)
-                    self.display_everything()
+                    #self.display_everything()
                     # Gas
                     gas_data = gas.read_all()
                     self.__save_data(4, gas_data.oxidising / 1000)
@@ -232,7 +237,7 @@ def main():
 
     lcd = lcdHelper()
     conn = webServerConnection()
-    aQ = airQuality(conn, lcdhelper.WIDTH, lcdhelper.HEIGHT)
+    aQ = airQuality(conn, lcd.WIDTH, lcd.HEIGHT)
     aQ.start()
 
     while True:

@@ -1,4 +1,4 @@
-from absl import app, flags, logging
+
 import cv2
 from cv2 import aruco
 import numpy as np
@@ -21,9 +21,9 @@ from fonts.ttf import RobotoMedium as UserFont
 
 TARGET_FPS = 15
 WEB_ON = False    #try to communicate with webserver
-LCD_ON = False    #try to write to lcd screen
+LCD_ON = True    #try to write to lcd screen
 USE_LIVE_IMAGE = False  #draw detections over a live capture instead of the image they were inferenced on.
-CV2_IMSHOW = True   #draw the image on the screen of the pi (if connected to hdmi)
+CV2_IMSHOW = False   #draw the image on the screen of the pi (if connected to hdmi)
 PRINT_FPS_TO_CONSOLE = True
 
 
@@ -183,7 +183,7 @@ class ImageProcessing:
         draw = ImageDraw.Draw(im_pil)
         x = self.x_offset
         y = self.y_offset
-        draw.text((x, y), self.FPS_message, font=self.smallfont, fill=(0,0,255))
+        #draw.text((x, y), self.FPS_message, font=self.smallfont, fill=(0,0,255))
         return im_pil
         
     def stop(self):
