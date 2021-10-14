@@ -10,7 +10,7 @@ const ImageStream: FC = () => {
 	useEffect(() => {
 		socket.on('image', message => {
 			const base64 = btoa(new Uint8Array(message).reduce((data, byte) => data + String.fromCharCode(byte), ''));
-			setImages(_images => [base64, ..._images]);
+			setImages(_images => [base64, ..._images.slice(0, 19)]);
 		});
 	}, []);
 

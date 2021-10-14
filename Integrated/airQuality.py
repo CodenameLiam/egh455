@@ -3,6 +3,8 @@
 import time
 import colorsys
 import sys
+
+import requests
 #import ST7735
 try:
     # Transitional fix for breaking change in LTR559
@@ -168,7 +170,17 @@ class airQuality():
                     self.rgb = palette[j + 1]
             self.draw.text((self.x, self.y), self.message, font=self.smallfont, fill=self.rgb)
         #st7735.display(img)
-        #conn.sensor_message(sensor_data)
+        # conn.sensor_message(sensor_data)
+
+        requests.post('http://localhost:5000/sensor', json=dict(
+            temperature=sensor_data[0],
+            pressure=sensor_data[1],
+            humidity=sensor_data[2],
+            light=sensor_data[3],
+            oxidised=sensor_data[4],
+            reduced=sensor_data[5],
+            nh3=sensor_data[6]
+        ))
 
 
     # Get the temperature of the CPU for compensation

@@ -2,7 +2,8 @@
 import cv2
 from cv2 import aruco
 import numpy as np
-
+from io import BytesIO
+import requests
 
 from time import time, sleep
 from yolov4_uavpayloadtaq import YoloV4_UAVPAYLOADTAQ as search_model
@@ -25,6 +26,15 @@ LCD_ON = True    #try to write to lcd screen
 USE_LIVE_IMAGE = False  #draw detections over a live capture instead of the image they were inferenced on.
 CV2_IMSHOW = False   #draw the image on the screen of the pi (if connected to hdmi)
 PRINT_FPS_TO_CONSOLE = True
+
+# Gets a file buffer from a PIL image
+def pil_to_buf(pil_image):
+    # Setup a buffer for the image
+    buf = BytesIO()
+    # Save the image to the buffer
+    pil_image.save(buf, 'jpeg')
+    # Return the buffer value
+    return buf.getvalue()
 
 
 class ImageProcessing:
@@ -74,12 +84,18 @@ class ImageProcessing:
             start_cycle = time()
                   
             image_data = self.cameraH.getImage()
+
+            self.detect_labels = dict( 
+                markerDetected=False,
+                personDetected=False,
+                backpackDetected=False)
             #image_data = cv2.imread("./test.jpg")
             
             (corners, ids, rejected) = aruco.detectMarkers(image_data, arucoDict,
             parameters=arucoParams)
             # verify *at least* one ArUco marker was detected
             if len(corners) > 0:
+                self.detect_labels.markerDetected = True
             # flatten the ArUco IDs list
                 ids = ids.flatten()
                 
@@ -92,14 +108,17 @@ class ImageProcessing:
             
             self.img = image_data
             self.img_avail = True
-            
-            if(len(self.objects)>0):
-                self.detect_labels = list(self.net.class_names[int(self.objects[0].label)])
-            else:
-                self.detect_labels = []
+
+            # 
+            for obj in self.objects:
+                if obj.label == 1:
+                    self.detect_labels.backpackDetected = True
+                if obj.label == 2:
+                    self.detect_labels.personDetected = True
+
                 
-            for (markerCorner, markerID) in self.aruco_zip:
-                self.detect_labels.append("Aruco ID: " + str(markerID))
+            # for (markerCorner, markerID) in self.aruco_zip:
+            #     self.detect_labels.append("Aruco ID: " + str(markerID))
             
 
             if(self.mode==1):
@@ -221,8 +240,13 @@ def main():
             image = IP.getCurImg()   
                
             if(WEB_ON):
+
                 markers = IP.getDetections()
-                conn.image_message(image, markers)
+                # Post the image to the server
+                requests.post('http://localhost:5000/image', 
+                    files=dict(file=pil_to_buf(image)), 
+                    data=markers)
+                # conn.image_message(image, markers)
             if(LCD_ON):
                 im_pil = IP.convert2LCD(image)
                 lcd.display(im_pil)
