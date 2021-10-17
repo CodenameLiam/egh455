@@ -95,7 +95,7 @@ class ImageProcessing:
             parameters=arucoParams)
             # verify *at least* one ArUco marker was detected
             if len(corners) > 0:
-                self.detect_labels.markerDetected = True
+                self.detect_labels['markerDetected'] = True
             # flatten the ArUco IDs list
                 ids = ids.flatten()
                 
@@ -112,9 +112,9 @@ class ImageProcessing:
             # 
             for obj in self.objects:
                 if obj.label == 1:
-                    self.detect_labels.backpackDetected = True
+                    self.detect_labels['backpackDetected'] = True
                 if obj.label == 2:
-                    self.detect_labels.personDetected = True
+                    self.detect_labels['personDetected'] = True
 
                 
             # for (markerCorner, markerID) in self.aruco_zip:
