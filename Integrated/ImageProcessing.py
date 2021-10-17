@@ -148,6 +148,9 @@ class ImageProcessing:
             requests.post('http://localhost:5000/image', 
                 files=dict(file=pil_to_buf(im_pil)), 
                 data=self.detect_labels)
+
+            print("\nIM TRYING TO SEND A PHOTO\n")
+            
                 
             
 
