@@ -7,7 +7,7 @@ import { CardTitle } from '../../Styles/Containers';
 import { SensorData } from '../../Types/SensorData';
 import * as Styles from './SensorPlot.styles';
 
-const CHART_LENGTH = 10;
+const CHART_LENGTH = 200;
 
 interface DataType {
 	key: keyof SensorData;
