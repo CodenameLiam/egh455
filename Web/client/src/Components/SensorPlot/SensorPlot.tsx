@@ -7,6 +7,8 @@ import { CardTitle } from '../../Styles/Containers';
 import { SensorData } from '../../Types/SensorData';
 import * as Styles from './SensorPlot.styles';
 
+const CHART_LENGTH = 10;
+
 interface DataType {
 	key: keyof SensorData;
 	name: string;
@@ -24,10 +26,11 @@ const dataType: DataType[] = [
 ];
 
 const chartData: ChartData = {
+	labels: Array.from(Array(CHART_LENGTH).keys()),
 	datasets: [
 		{
 			label: 'Temp',
-			data: [],
+			data: Array.from(Array(CHART_LENGTH)),
 			fill: true,
 			cubicInterpolationMode: 'monotone',
 			backgroundColor: Colours.temperatureLight,
@@ -58,32 +61,29 @@ const chartOptions: ChartOptions = {
 };
 
 const SensorPlot: FC = () => {
-	var currentChart = 0;
-
 	// Chart reference
 	const ref = useRef<ChartConfiguration | any>(null);
 	const [sensor, setSensor] = useState<keyof SensorData>('temperature');
 
 	// Subscribe to socket
 	useEffect(() => {
-		socket.on('sensor', data => {
-			console.log(data);
-			if (ref.current) {
-				const chartData = ref.current.data.datasets[0].data;
-				chartData?.shift();
-				chartData?.push(data[sensor]);
-				ref.current.update();
-			}
-		});
-	}, []);
-
-	useEffect(() => {
 		if (ref.current) {
-			ref.current.data.datasets[0].data = Array.from(Array(200));
+			ref.current.data.datasets[0].data = Array.from(Array(CHART_LENGTH));
 			ref.current.data.datasets[0].backgroundColor = Colours[`${sensor}Light` as keyof typeof Colours];
 			ref.current.data.datasets[0].borderColor = Colours[sensor as keyof typeof Colours];
 			ref.current.update();
 		}
+
+		// Remove any sockets still listening for old sensor data
+		socket.off('sensor');
+		// Listen to new sensor data
+		socket.on('sensor', data => {
+			if (ref.current) {
+				ref.current.data.datasets[0].data.shift();
+				ref.current.data.datasets[0].data.push(data[sensor]);
+				ref.current.update();
+			}
+		});
 	}, [sensor]);
 
 	return (
