@@ -5,7 +5,7 @@
 		"version": "1.0.0",
 		"description": "Documentation for the EGH455 Web APIs"
 	},
-	"servers": [{ "url": "http://192.168.1.13:5000" }],
+	"servers": [{ "url": "http://192.168.1.13:5000" }, { "url": "http://localhost:5000" }],
 
 	"tags": [
 		{
