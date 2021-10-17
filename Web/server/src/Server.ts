@@ -82,6 +82,8 @@ io.on('connection', (socket: Socket) => {
  * Accepts multipart form data containing a single image, and flags for each target
  */
 app.post('/image', upload.single('file'), async (req: Request<{}, {}, ImageData>, res: Response) => {
+	console.log('Image endpoint hit');
+
 	io.emit('image', req.file.buffer);
 
 	io.emit('detection', {
@@ -96,6 +98,8 @@ app.post('/image', upload.single('file'), async (req: Request<{}, {}, ImageData>
  * Accepts an object of sensor data in and emits that to the client
  */
 app.post('/sensor', async (req: Request<{}, {}, SensorData>, res: Response) => {
+	console.log('Sensor endpoint hit');
+
 	io.emit('sensor', req.body);
 	res.sendStatus(200);
 });
