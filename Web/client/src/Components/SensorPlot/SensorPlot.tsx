@@ -1,6 +1,7 @@
 import { ChartConfiguration, ChartData, ChartOptions } from 'chart.js/auto';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import { API } from '../../API/API';
 import socket from '../../Services/SocketService';
 import Colours from '../../Styles/Colours';
 import { CardTitle } from '../../Styles/Containers';
@@ -67,12 +68,17 @@ const SensorPlot: FC = () => {
 
 	// Subscribe to socket
 	useEffect(() => {
-		if (ref.current) {
-			ref.current.data.datasets[0].data = Array.from(Array(CHART_LENGTH));
-			ref.current.data.datasets[0].backgroundColor = Colours[`${sensor}Light` as keyof typeof Colours];
-			ref.current.data.datasets[0].borderColor = Colours[sensor as keyof typeof Colours];
-			ref.current.update();
-		}
+		(async () => {
+			const sensorData = await API.getSensorData();
+			if (ref.current) {
+				const selectedSensorData = sensorData.map(data => data[sensor]);
+				const chartData = [...Array.from(Array(CHART_LENGTH - sensorData.length)), ...selectedSensorData];
+				ref.current.data.datasets[0].data = chartData;
+				ref.current.data.datasets[0].backgroundColor = Colours[`${sensor}Light` as keyof typeof Colours];
+				ref.current.data.datasets[0].borderColor = Colours[sensor as keyof typeof Colours];
+				ref.current.update();
+			}
+		})();
 
 		// Remove any sockets still listening for old sensor data
 		socket.off('sensor');

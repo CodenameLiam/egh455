@@ -7,7 +7,20 @@ import { request as __request } from '../core/request';
 export class SensorService {
 
     /**
-     * Send sensor data to the web interface
+     * Get sensor data from the database
+     * @returns SensorData OK
+     * @throws ApiError
+     */
+    public static async getSensorService(): Promise<Array<SensorData>> {
+        const result = await __request({
+            method: 'GET',
+            path: `/sensor`,
+        });
+        return result.body;
+    }
+
+    /**
+     * Store sensor data, and send it to the web interface
      * @param requestBody
      * @returns any OK
      * @throws ApiError

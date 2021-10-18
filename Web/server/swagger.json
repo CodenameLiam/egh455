@@ -10,17 +10,40 @@
 	"tags": [
 		{
 			"name": "Sensor",
-			"description": "Endpoint for sending sensor data"
+			"description": "Endpoint for sending/retrieving sensor data"
 		},
 		{
 			"name": "Image",
-			"description": "Endpoint for sending image data"
+			"description": "Endpoint for sending/retrieving image data"
+		},
+		{
+			"name": "Target",
+			"description": "Endpoint for sending/retrieving target data"
 		}
 	],
 	"paths": {
 		"/sensor": {
+			"get": {
+				"summary": "Get sensor data from the database",
+				"tags": ["Sensor"],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SensorData"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
 			"post": {
-				"summary": "Send sensor data to the web interface",
+				"summary": "Store sensor data, and send it to the web interface",
 				"tags": ["Sensor"],
 				"requestBody": {
 					"required": true,
@@ -56,6 +79,27 @@
 				"responses": {
 					"200": {
 						"description": "OK"
+					}
+				}
+			}
+		},
+		"/target": {
+			"get": {
+				"summary": "Get target data from the database",
+				"tags": ["Target"],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/TargetData"
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -110,6 +154,17 @@
 					}
 				},
 				"required": ["file"]
+			},
+			"TargetData": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"date": {
+						"type": "string"
+					}
+				}
 			}
 		}
 	}
