@@ -70,6 +70,7 @@ const SensorPlot: FC = () => {
 	useEffect(() => {
 		(async () => {
 			const sensorData = await API.getSensorData();
+			console.log(sensorData);
 			if (ref.current) {
 				const selectedSensorData = sensorData.map(data => data[sensor]);
 				const chartData = [...Array.from(Array(CHART_LENGTH - sensorData.length)), ...selectedSensorData];
