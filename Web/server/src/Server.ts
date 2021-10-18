@@ -183,12 +183,12 @@ app.post('/image', upload.single('file'), async (req: Request<{}, {}, ImageData>
  * Gets last 200 rows of sensor data from the database
  */
 app.get('/sensor', async (req: Request, res: Response) => {
-	db.all(`SELECT * FROM sensor ORDER BY id ASC LIMIT 200`, (err, rows) => {
+	db.all(`SELECT * FROM sensor ORDER BY id DESC LIMIT 200`, (err, rows) => {
 		if (err) {
 			console.error(err.message);
 			res.status(400).json({ error: err.message });
 		} else {
-			res.status(200).json(rows);
+			res.status(200).json(rows.reverse());
 		}
 	});
 });
@@ -198,11 +198,13 @@ app.get('/sensor', async (req: Request, res: Response) => {
  */
 app.post('/sensor', async (req: Request<{}, {}, SensorData>, res: Response) => {
 	console.log('Sensor endpoint hit');
+	
+	const {temperature, pressure, humidity, light, oxidised, reduced, nh3} = req.body;
 
 	db.run(
 		`INSERT INTO sensor (temperature, pressure, humidity, light, oxidised, reduced, nh3)
 	    VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		Object.values(req.body),
+		[temperature, pressure, humidity, light, oxidised, reduced, nh3],
 		err => {
 			if (err) {
 				console.error(err.message);
