@@ -105,42 +105,82 @@ const nh3Data: ChartData = {
 	],
 };
 
-// const chartData: ChartData = {
-// 	labels: ['Temp', 'Pressue', 'Hum', 'Light', 'Oxideised', 'Reduced', 'NH3'],
-// 	datasets: [
-// 		{
-// 			label: 'Sensor value',
-// 			borderWidth: 2,
-// 			fill: true,
-// 			data: [65, 59, 80, 81, 56, 55, 12],
-// 			backgroundColor: [
-// 				'rgba(255, 99, 132, 0.2)',
-// 				'rgba(255, 159, 64, 0.2)',
-// 				'rgba(255, 205, 86, 0.2)',
-// 				'rgba(75, 192, 192, 0.2)',
-// 				'rgba(54, 162, 235, 0.2)',
-// 				'rgba(102, 120, 255, 0.2)',
-// 				'rgba(153, 102, 255, 0.2)',
-// 			],
-// 			borderColor: [
-// 				'rgb(255, 99, 132)',
-// 				'rgb(255, 159, 64)',
-// 				'rgb(255, 205, 86)',
-// 				'rgb(75, 192, 192)',
-// 				'rgb(54, 162, 235)',
-// 				'rgb(102, 120, 255)',
-// 				'rgb(153, 102, 255)',
-// 			],
-// 		},
-// 	],
-// };
-
 const chartOptions: ChartOptions = {
 	responsive: true,
 	maintainAspectRatio: false,
 	plugins: {
 		legend: {
 			display: false,
+		},
+	},
+};
+
+const tempOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 40,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const preOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 1200,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const humOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 30,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const lightOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 500,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const oxOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 15,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const reOptions: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 400,
+			suggestedMin: 0,
+		},
+	},
+};
+
+const nh3Options: ChartOptions = {
+	...chartOptions,
+	scales: {
+		yAxes: {
+			suggestedMax: 300,
+			suggestedMin: 0,
 		},
 	},
 };
@@ -194,25 +234,25 @@ const SensorFeed: FC = () => {
 			<CardTitle>Sensor Feed</CardTitle>
 			<Styles.ChartContainer>
 				<Styles.ChartCell>
-					<Bar ref={tempRef} data={tempData} options={chartOptions} />
+					<Bar ref={tempRef} data={tempData} options={tempOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={preRef} data={preData} options={chartOptions} />
+					<Bar ref={preRef} data={preData} options={preOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={humRef} data={humData} options={chartOptions} />
+					<Bar ref={humRef} data={humData} options={humOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={lightRef} data={lightData} options={chartOptions} />
+					<Bar ref={lightRef} data={lightData} options={lightOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={oxRef} data={oxData} options={chartOptions} />
+					<Bar ref={oxRef} data={oxData} options={oxOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={reRef} data={reData} options={chartOptions} />
+					<Bar ref={reRef} data={reData} options={reOptions} />
 				</Styles.ChartCell>
 				<Styles.ChartCell>
-					<Bar ref={nh3Ref} data={nh3Data} options={chartOptions} />
+					<Bar ref={nh3Ref} data={nh3Data} options={nh3Options} />
 				</Styles.ChartCell>
 			</Styles.ChartContainer>
 		</Styles.Container>

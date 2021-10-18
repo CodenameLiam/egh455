@@ -70,9 +70,15 @@ const SensorPlot: FC = () => {
 	useEffect(() => {
 		(async () => {
 			const sensorData = await API.getSensorData();
+
+			// console.log(Array.from(Array(CHART_LENGTH - sensorData.length)));
+
 			if (ref.current) {
 				const selectedSensorData = sensorData.map(data => data[sensor]);
-				const chartData = [...Array.from(Array(CHART_LENGTH - sensorData.length)), ...selectedSensorData];
+				const chartData = [
+					...Array.from(Array(CHART_LENGTH - sensorData.length)),
+					...selectedSensorData.slice(1),
+				];
 				ref.current.data.datasets[0].data = chartData;
 				ref.current.data.datasets[0].backgroundColor = Colours[`${sensor}Light` as keyof typeof Colours];
 				ref.current.data.datasets[0].borderColor = Colours[sensor as keyof typeof Colours];

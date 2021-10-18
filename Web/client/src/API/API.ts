@@ -2,8 +2,8 @@ import axios from 'axios';
 import { SensorData } from '../Types/SensorData';
 import { TargetData } from '../Types/TargetData';
 
-const SERVER = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
-// const SERVER = 'http://192.168.1.20:5000';
+// const SERVER = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
+const SERVER = 'http://192.168.1.20:5000';
 
 /**
  * Gets sensor data from the server database
