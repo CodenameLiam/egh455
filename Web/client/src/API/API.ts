@@ -3,7 +3,7 @@ import { SensorData } from '../Types/SensorData';
 import { TargetData } from '../Types/TargetData';
 
 // const SERVER = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : '';
-const SERVER = 'http://192.168.1.20:5000';
+const SERVER = process.env.NODE_ENV === 'development' ? 'http://172.20.10.2:5000' : '';
 
 /**
  * Gets sensor data from the server database

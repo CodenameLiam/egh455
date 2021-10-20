@@ -30,7 +30,7 @@ const chartData: ChartData = {
 	labels: Array.from(Array(CHART_LENGTH).keys()),
 	datasets: [
 		{
-			label: 'Temp',
+			label: '',
 			data: Array.from(Array(CHART_LENGTH)),
 			fill: true,
 			cubicInterpolationMode: 'monotone',
@@ -70,6 +70,9 @@ const SensorPlot: FC = () => {
 	useEffect(() => {
 		(async () => {
 			const sensorData = await API.getSensorData();
+
+			console.log(sensor);
+			console.log(sensorData);
 
 			// console.log(Array.from(Array(CHART_LENGTH - sensorData.length)));
 
