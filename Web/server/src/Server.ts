@@ -24,7 +24,7 @@ import { ImageData } from 'Models';
 // Initialisation
 // ----------------------------------------------------------------------------------------
 const app = express(); // Init app
-const server = createServer(app); // Create http server
+export const server = createServer(app); // Create http server
 const io = new Server(server, { cors: { origin: 'http://localhost:3000' } }); // Init sockets
 const upload = multer();
 
@@ -198,8 +198,8 @@ app.get('/sensor', async (req: Request, res: Response) => {
  */
 app.post('/sensor', async (req: Request<{}, {}, SensorData>, res: Response) => {
 	console.log('Sensor endpoint hit');
-	
-	const {temperature, pressure, humidity, light, oxidised, reduced, nh3} = req.body;
+
+	const { temperature, pressure, humidity, light, oxidised, reduced, nh3 } = req.body;
 
 	db.run(
 		`INSERT INTO sensor (temperature, pressure, humidity, light, oxidised, reduced, nh3)
