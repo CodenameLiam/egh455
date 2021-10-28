@@ -24,7 +24,7 @@ import { ImageData } from 'Models';
 // Initialisation
 // ----------------------------------------------------------------------------------------
 const app = express(); // Init app
-const server = createServer(app); // Create http server
+export const server = createServer(app); // Create http server
 const io = new Server(server, { cors: { origin: 'http://localhost:3000' } }); // Init sockets
 const upload = multer(); // Add multi-part form data
 
