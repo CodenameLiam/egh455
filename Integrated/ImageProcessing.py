@@ -6,7 +6,7 @@ from io import BytesIO
 import requests
 
 from time import time, sleep
-from yolov4_uavpayloadtaq import YoloV4_UAVPAYLOADTAQ as search_model
+from Yolov4Tiny_uavpayloadtaq import YoloV4_UAVPAYLOADTAQ as search_model
 from threading import Thread
 import ncnn
 
