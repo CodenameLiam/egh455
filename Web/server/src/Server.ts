@@ -26,16 +26,16 @@ import { ImageData } from 'Models';
 const app = express(); // Init app
 const server = createServer(app); // Create http server
 const io = new Server(server, { cors: { origin: 'http://localhost:3000' } }); // Init sockets
-const upload = multer();
+const upload = multer(); // Add multi-part form data
 
 // ----------------------------------------------------------------------------------------
 // Setup middleware
 // ----------------------------------------------------------------------------------------
 app.use(express.static(path.join(__dirname, '../../client/build'))); // Serve static files
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: '*' })); // Allow connections from external users
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(docs));
+app.use('/docs', swaggerUI.serve, swaggerUI.setup(docs)); // API documentation
 
 /* -------------------------------------------------------------------------- */
 /*                             Configure Database                             */
@@ -45,7 +45,7 @@ const db = new Database(':memory:', err => {
 		console.error(err.message);
 		throw err;
 	} else {
-		console.info('Connected to the in-memory SQlite database.');
+		console.info('Connected to the SQlite database.');
 		// Create sensor table
 		db.run(
 			`CREATE TABLE IF NOT EXISTS sensor (
@@ -95,25 +95,6 @@ io.on('connection', (socket: Socket) => {
 	socket.on('disconnect', () => {
 		console.log(`User from ${socket.handshake.address} has disconnected`);
 	});
-
-	// socket.on('marker_detected', function (data) {
-	// 	console.log(`Marker type detected: ${data.Type} ` + `File: ${data.File}`);
-	// 	const sound = require('sound-play');
-	// 	sound.play('Web/server/src/Assets/Marker_Alerts/trump_backpack_china.wav');
-	// 	io.sockets.emit('marker_detected', data);
-	// });
-
-	// socket.on('sensor_data', function (data) {
-	// 	console.log(
-	// 		`New Data: Gas: ${data.Gas}` +
-	// 			`, Humidity: ${data.Humidity} ` +
-	// 			`, Pressure: ${data.Pressure} ` +
-	// 			`, Temperature: ${data.Temperature}` +
-	// 			`, Light ${data.Lux}` +
-	// 			`, Noise: ${data.Noise}`,
-	// 	);
-	// 	io.sockets.emit('sensor_data', data);
-	// });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -198,8 +179,8 @@ app.get('/sensor', async (req: Request, res: Response) => {
  */
 app.post('/sensor', async (req: Request<{}, {}, SensorData>, res: Response) => {
 	console.log('Sensor endpoint hit');
-	
-	const {temperature, pressure, humidity, light, oxidised, reduced, nh3} = req.body;
+
+	const { temperature, pressure, humidity, light, oxidised, reduced, nh3 } = req.body;
 
 	db.run(
 		`INSERT INTO sensor (temperature, pressure, humidity, light, oxidised, reduced, nh3)
